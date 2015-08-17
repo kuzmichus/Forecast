@@ -1,0 +1,23 @@
+{
+  "name": "kuzmich/forecast",
+  "description": "",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Sergey V. Kuzin",
+      "email": "sergey@kuzin.name"
+    }
+  ],
+  "require": {
+    "php": ">=5.5",
+    "kuzmich/cache": "0.1.x-dev",
+    "psr/log": "^1.0",
+    "guzzlehttp/guzzle": "6.0.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Forecast\\": "src/"
+    }
+  }
+}
