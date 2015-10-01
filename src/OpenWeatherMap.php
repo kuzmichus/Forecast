@@ -13,7 +13,8 @@ namespace Forecast;
 
 use Forecast\Helper\Point;
 
-class OpenWeatherMap extends ForecastAbstract
+//API key: e83f31c8164f8f7ba48ce24a40e26512
+class OpenWeatherMap extends WeatherAbstract
 {
 
     public function doFetchCurrent(Point $point)

@@ -12,6 +12,7 @@ namespace Forecast;
 
 
 use Forecast\Helper\Point;
+use GuzzleHttp\Subscriber\Log\LogSubscriber;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 
@@ -27,7 +28,7 @@ use Psr\Log\LoggerInterface;
  * @license http://opensource.org/licenses/MIT The MIT License (MIT)
  *
  */
-class ForecastIO extends ForecastAbstract
+class ForecastIO extends WeatherAbstract
 {
     /**
      * @var string
@@ -54,6 +55,38 @@ class ForecastIO extends ForecastAbstract
         parent::__construct($cache, $logger);
     }
 
+    protected function doFetchAll(Point $point)
+    {
+        if ($point->getType() == Point::ADDRESS) {
+            throw new \InvalidArgumentException();
+        }
+
+        $key = 'weather.fc.io-all-' . md5(serialize([$this->getLang(), $this->getUnits(), $point->getKey()]));
+        $item = $this->cache->getItem($key);
+        if (!$item->exists()) {
+            $params = [
+                'units' => $this->getUnits(),
+                'lang' => $this->getLang(),
+                'exclude' => 'flags'
+            ];
+            $url = 'https://api.forecast.io/forecast/' . $this->apiKey . '/' . $point->getLatitude() . ',' . $point->getLongitude();
+
+            $client = new \GuzzleHttp\Client();
+
+            $subscriber = new LogSubscriber($this->logger);
+            $client->getEmitter()->attach($subscriber);
+
+
+            $response = $client->get($url, ['debug' => false, 'query' => $params]);
+            $result = json_decode($response->getBody()->getContents(), true);
+            $this->expiration = new \DateTime($response->getHeader('Expires')[0]);
+
+            $item->set($result, $this->expiration);
+            $this->cache->save($item);
+        }
+        return $item->get();
+    }
+
     /**
      * @internal
      * @return \Forecast\Current
@@ -63,20 +96,30 @@ class ForecastIO extends ForecastAbstract
         if ($point->getType() == Point::ADDRESS) {
             throw new \InvalidArgumentException();
         }
-        $params = [
-            'units' => $this->getUnits(),
-            'lang' => $this->getLang(),
-            'exclude' => 'flags,daily,hourly'
-        ];
-        $url = 'https://api.forecast.io/forecast/' . $this->apiKey . '/' . $point->getLatitude() . ',' . $point->getLongitude();
-
-        $client = new \GuzzleHttp\Client();
-        $response = $client->get($url, ['debug' => false, 'query' => $params]);
-        $result = json_decode($response->getBody()->getContents(), true);
-        $this->expiration = new \DateTime($response->getHeader('Expires')[0]);
+        $result = $this->doFetchAll($point);
         $result = $result['currently'];
 
         $cur = new Current();
+
+        $precipType = self::PRECIP_TYPE_NONE;
+        if ($result['precipProbability'] > 0) {
+            switch ($result['precipType']) {
+                case 'rain':
+                    $precipType = self::PRECIP_TYPE_RAIN;
+                    break;
+                case 'snow':
+                    $precipType = self::PRECIP_TYPE_SNOW;
+                    break;
+                case 'sleet':
+                    $precipType = self::PRECIP_TYPE_SLEET;
+                    break;
+                case 'hail':
+                    $precipType = self::PRECIP_TYPE_HAIL;
+                    break;
+                default:
+                    throw new \Exception('Не известный тип precipType: ' . $result['precipType']);
+            }
+        }
         $cur->setData([
             'summary' => $result['summary'],
             'temperature' => [
@@ -90,7 +133,7 @@ class ForecastIO extends ForecastAbstract
             'precipitation' => [
                 'intensity' => $result['precipIntensity'],
                 'probability' => $result['precipProbability'] * 100,
-                'type' => $result['precipType'],
+                'type' => $precipType,
             ],
             'humidity' => [
                 'humidity' => $result['humidity']
@@ -107,7 +150,7 @@ class ForecastIO extends ForecastAbstract
      */
     protected function getCacheKeyCurrent(Point $point)
     {
-        return 'fc.io-current-' . md5(serialize([$this->getLang(), $this->getUnits(), $point->getKey()]));
+        return 'weather.fc.io-current-' . md5(serialize([$this->getLang(), $this->getUnits(), $point->getKey()]));
     }
 
     /**
@@ -128,21 +171,32 @@ class ForecastIO extends ForecastAbstract
         if ($point->getType() == Point::ADDRESS) {
             throw new \InvalidArgumentException();
         }
-        $params = [
-            'units' => $this->getUnits(),
-            'lang' => $this->getLang(),
-            'exclude' => 'flags,daily,currently'
-        ];
-        $url = 'https://api.forecast.io/forecast/' . $this->apiKey . '/' . $point->getLatitude() . ',' . $point->getLongitude();
 
-        $client = new \GuzzleHttp\Client();
-        $response = $client->get($url, ['debug' => false, 'query' => $params]);
-        $result = json_decode($response->getBody()->getContents(), true);
-        $this->expiration = new \DateTime($response->getHeader('Expires')[0]);
+        $result = $this->doFetchAll($point);
         $result = $result['hourly'];
 
         $hours = [];
         foreach ($result['data'] as $item) {
+            $precipType = self::PRECIP_TYPE_NONE;
+            if ($item['precipProbability'] > 0) {
+                switch ($item['precipType']) {
+                    case 'rain':
+                        $precipType = self::PRECIP_TYPE_RAIN;
+                        break;
+                    case 'snow':
+                        $precipType = self::PRECIP_TYPE_SNOW;
+                        break;
+                    case 'sleet':
+                        $precipType = self::PRECIP_TYPE_SLEET;
+                        break;
+                    case 'hail':
+                        $precipType = self::PRECIP_TYPE_HAIL;
+                        break;
+                    default:
+                        throw new \Exception('Не известный тип precipType: ' . $item['precipType']);
+                }
+            }
+
             $hours[] = [
                 'summary'   => $item['summary'],
                 'date' => new \DateTime(date(\DateTime::RFC3339, $item['time'])),
@@ -157,11 +211,12 @@ class ForecastIO extends ForecastAbstract
                 'precipitation' => [
                     'intensity' => $item['precipIntensity'],
                     'probability' => $item['precipProbability'] * 100,
-                    'type' => isset($item['precipType']) ? $item['precipType'] : null,
+                    'type' => $precipType,
                 ],
                 'humidity' => [
                     'humidity' => $item['humidity']
-                ]
+                ],
+                'icon'  => $item['icon']
             ];
         }
 
@@ -184,7 +239,7 @@ class ForecastIO extends ForecastAbstract
      */
     protected function getCacheKeyHourly(Point $point)
     {
-        return 'fc.io-hourly-' . md5(serialize([$this->getLang(), $this->getUnits(), $point->getKey()]));
+        return 'weather.fc.io-hourly-' . md5(serialize([$this->getLang(), $this->getUnits(), $point->getKey()]));
     }
 
     /**

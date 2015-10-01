@@ -18,7 +18,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 /**
- * Class ForecastAbstract
+ * Class WeatherAbstract
  *
  * PHP version 5.5
  *
@@ -27,7 +27,7 @@ use Psr\Log\NullLogger;
  * @license http://opensource.org/licenses/MIT The MIT License (MIT)
  *
  */
-abstract class ForecastAbstract
+abstract class WeatherAbstract
 {
     /**
      * @internal
@@ -53,6 +53,17 @@ abstract class ForecastAbstract
      */
     protected $units = 'si';
 
+    /** Нет осадков */
+    const PRECIP_TYPE_NONE = 0;
+    /** Дождь */
+    const PRECIP_TYPE_RAIN = 1;
+    /** Снег */
+    const PRECIP_TYPE_SNOW = 2;
+    /** Снег с дождём */
+    const PRECIP_TYPE_SLEET = 3;
+    /** Град */
+    const PRECIP_TYPE_HAIL = 4;
+
     /**
      *
      *
@@ -63,7 +74,6 @@ abstract class ForecastAbstract
      */
     public function __construct(CacheItemPoolInterface $cache = null, LoggerInterface $logger = null)
     {
-
         $this->cache = $cache ?: new NullCacheItemPool();
         $this->logger = $logger ?: new NullLogger();
     }
@@ -122,10 +132,10 @@ abstract class ForecastAbstract
      * @api
      * @return Hourly
      */
-    public function getHourly(Point $point)
+    public function getHourly(Point $point, $forse = false)
     {
         $item = $this->cache->getItem($this->getCacheKeyHourly($point));
-        if (true || !$item->exists()) {
+        if ($forse || !$item->exists()) {
             $item->set($this->doFetchHourly($point), $this->getCacheExpirationHourly());
             $this->cache->save($item);
         }

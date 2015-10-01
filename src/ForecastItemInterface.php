@@ -11,6 +11,11 @@
 namespace Forecast;
 
 
+use Forecast\Model\Humidity;
+use Forecast\Model\Precipitation;
+use Forecast\Model\Temperature;
+use Forecast\Model\Wind;
+
 interface ForecastItemInterface
 {
     /**
@@ -33,6 +38,21 @@ interface ForecastItemInterface
      * @return Wind
      */
     public function getWind();
+
+    /**
+     * @return Humidity
+     */
+    public function getHumidity();
+
+    /**
+     * @return Precipitation
+     */
+    public function getPrecipitation();
+
+    /**
+     * @return string
+     */
+    public function getIcon();
 
     /**
      * @api

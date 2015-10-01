@@ -12,8 +12,10 @@ namespace Forecast;
 
 
 use Forecast\Model\Hour;
+use Forecast\Model\Humidity;
+use Forecast\Model\Precipitation;
 
-class Hourly implements  ForecastItemInterface
+class Hourly implements ForecastItemInterface
 {
     /** @var float */
     protected $summary = null;
@@ -27,7 +29,7 @@ class Hourly implements  ForecastItemInterface
      */
     public function getSummary()
     {
-        return $this->summary;
+        return (string)$this->summary;
     }
 
     /**
@@ -57,7 +59,7 @@ class Hourly implements  ForecastItemInterface
      */
     public function __toString()
     {
-        // TODO: Implement __toString() method.
+        return $this->getSummary();
     }
 
     /**
@@ -80,5 +82,57 @@ class Hourly implements  ForecastItemInterface
         $this->humidity = (new Humidity())->setData($data['humidity']);*/
 
         return $this;
+    }
+
+    public function onHours()
+    {
+        return $this->hours;
+    }
+
+    /**
+     * @param int $hour
+     *
+     * @return Hour
+     */
+    public function inTime($seekingHour)
+    {
+        $seekingHour = (int)$seekingHour;
+        if ($seekingHour < 0 || $seekingHour > 23) {
+            throw new \InvalidArgumentException();
+        }
+
+        /** @var Hour $hour */
+        foreach ($this->hours as $hour ) {
+
+            $h = $hour->getDate()->format('H');
+            if ((int)$hour->getDate()->format('H') === $seekingHour) {
+                break;
+            }
+        }
+        return $hour;
+    }
+
+    /**
+     * @return Humidity
+     */
+    public function getHumidity()
+    {
+        // TODO: Implement getHumidity() method.
+    }
+
+    /**
+     * @return Precipitation
+     */
+    public function getPrecipitation()
+    {
+        // TODO: Implement getPrecipitation() method.
+    }
+
+    /**
+     * @return string
+     */
+    public function getIcon()
+    {
+        // TODO: Implement getIcon() method.
     }
 }

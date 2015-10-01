@@ -113,4 +113,12 @@ class Current implements ForecastItemInterface
     {
         return (string)$this->getSummary();
     }
+
+    /**
+     * @return string
+     */
+    public function getIcon()
+    {
+        // TODO: Implement getIcon() method.
+    }
 }

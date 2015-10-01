@@ -48,6 +48,11 @@ class Point
         }
     }
 
+    public function __toString()
+    {
+        return (string)$this->getLatitude() . ',' . $this->getLongitude();
+    }
+
     /**
      * @api
      * @return float

@@ -40,9 +40,9 @@ class Temperature implements ModelInterface
      *
      * @return float
      */
-    public function getCurrent()
+    public function getCurrent($precision = 2)
     {
-        return $this->current;
+        return round($this->current, $precision);
     }
 
     /**

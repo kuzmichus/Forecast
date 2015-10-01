@@ -15,8 +15,24 @@ use Forecast\ForecastItemInterface;
 
 class Hour implements  ForecastItemInterface
 {
-    protected $summary = null;
-    protected $temperature = null;
+    /** @var \DateTime  */
+    protected $date;
+    protected $summary;
+
+    /** @var Temperature  */
+    protected $temperature;
+
+    /** @var Wind */
+    protected $wind;
+
+    /** @var Humidity */
+    protected $humidity;
+
+    /** @var Precipitation */
+    protected $precipitation;
+
+    /** @var string */
+    protected $icon;
 
     /**
      * @api
@@ -45,7 +61,7 @@ class Hour implements  ForecastItemInterface
      */
     public function getWind()
     {
-        // TODO: Implement getWind() method.
+        return $this->wind;
     }
 
     /**
@@ -59,13 +75,50 @@ class Hour implements  ForecastItemInterface
     }
 
     /**
+     * @return \DateTime
+     */
+    public function getDate()
+    {
+        return $this->date;
+    }
+
+    /**
      * @param array $data
      * @return $this
      */
     public function setData(array $data)
     {
+        $this->date = $data['date'];
         $this->summary = $data['summary'];
         $this->temperature = (new Temperature())->setData($data['temperature']);
+        $this->wind = (new Wind())->setData($data['wind']);
+        $this->humidity = (new Humidity())->setData($data['humidity']);
+        $this->precipitation = (new Precipitation())->setData($data['precipitation']);
+        $this->icon = $data['icon'];
         return $this;
+    }
+
+    /**
+     * @return Humidity
+     */
+    public function getHumidity()
+    {
+        return $this->humidity;
+    }
+
+    /**
+     * @return Precipitation
+     */
+    public function getPrecipitation()
+    {
+        return $this->precipitation;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIcon()
+    {
+        return $this->icon;
     }
 }
