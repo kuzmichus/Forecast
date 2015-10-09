@@ -12,6 +12,7 @@ namespace Forecast;
 
 
 use Forecast\Helper\Point;
+use GuzzleHttp\Subscriber\Log\Formatter;
 use GuzzleHttp\Subscriber\Log\LogSubscriber;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
@@ -73,17 +74,23 @@ class ForecastIO extends WeatherAbstract
 
             $client = new \GuzzleHttp\Client();
 
-            $subscriber = new LogSubscriber($this->logger);
-            $client->getEmitter()->attach($subscriber);
+            //$subscriber = new LogSubscriber($this->logger, Formatter::SHORT);
+            //$client->getEmitter()->attach($subscriber);
 
 
             $response = $client->get($url, ['debug' => false, 'query' => $params]);
-            $result = json_decode($response->getBody()->getContents(), true);
-            $this->expiration = new \DateTime($response->getHeader('Expires')[0]);
 
-            $item->set($result, $this->expiration);
-            $this->cache->save($item);
+            $result = json_decode($response->getBody()->getContents(), true);
+
+            if ($result !== null) {
+                list($n, $exp) = explode('=', $response->getHeader('Cache-Control'));
+                $item->expiresAfter($exp);
+                $item->set($result);
+                $item->expiresAfter($exp);
+                $this->cache->save($item);
+            }
         }
+        $this->expiration = $item->getExpiration();
         return $item->get();
     }
 
