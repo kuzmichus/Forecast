@@ -11,6 +11,7 @@
 namespace Forecast;
 
 
+use Fig\Cache\Memory\MemoryPool;
 use Forecast\Helper\Point;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Cache\NullCacheItemPool;
@@ -74,7 +75,7 @@ abstract class WeatherAbstract
      */
     public function __construct(CacheItemPoolInterface $cache = null, LoggerInterface $logger = null)
     {
-        $this->cache = $cache ?: new NullCacheItemPool();
+        $this->cache = $cache ?: new MemoryPool();
         $this->logger = $logger ?: new NullLogger();
     }
 
