@@ -11,15 +11,23 @@
   ],
   "require": {
     "php": ">=5.5",
-    "psr/log": "^1.0",
+    "psr/log": "1.0",
+    "psr/cache": "1.0",
+    "fig/cache-util": "1.0.x-dev",
     "guzzlehttp/guzzle": "~5.0",
-    "guzzlehttp/log-subscriber": "^1.0",
-    "psr/cache": "^1.0",
-    "psr/cache-util": "1.0.x-dev"
+    "guzzlehttp/log-subscriber": "^1.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~4.0"
   },
   "autoload": {
     "psr-4": {
       "Forecast\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Forecast\\Tests\\": "tests/"
     }
   }
 }
