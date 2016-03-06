@@ -53,4 +53,34 @@ class OpenWeatherMap extends WeatherAbstract
     {
         return new \DateTime('now + 5 minuts');
     }
+
+    /**
+     * @param Point $point
+     * @return Hourly
+     */
+    protected function doFetchHourly(Point $point)
+    {
+        // TODO: Implement doFetchHourly() method.
+    }
+
+    /**
+     * @param Point $point
+     *
+     * @internal
+     * @return string
+     */
+    protected function getCacheKeyHourly(Point $point)
+    {
+        // TODO: Implement getCacheKeyHourly() method.
+    }
+
+    /**
+     *
+     * @internal
+     * @return \DateTime
+     */
+    protected function getCacheExpirationHourly()
+    {
+        // TODO: Implement getCacheExpirationHourly() method.
+    }
 }
