@@ -1,12 +1,21 @@
 {
   "name": "kuzmich/forecast",
+  "type": "library",
   "description": "",
+  "keywords": [
+    "forecast",
+    "forecastio",
+    "heat index",
+    "windchill index"
+  ],
+  "homepage": "https://github.com/kuzmichus/Forecast",
   "minimum-stability": "stable",
   "license": "MIT",
   "authors": [
     {
       "name": "Sergey V. Kuzin",
-      "email": "sergey@kuzin.name"
+      "email": "sergey@kuzin.name",
+      "role": "Developer"
     }
   ],
   "require": {
@@ -28,6 +37,14 @@
   "autoload-dev": {
     "psr-4": {
       "Forecast\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "0.1-dev"
     }
   }
 }
