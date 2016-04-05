@@ -74,10 +74,6 @@ class ForecastIO extends WeatherAbstract
 
             $client = new \GuzzleHttp\Client();
 
-            //$subscriber = new LogSubscriber($this->logger, Formatter::SHORT);
-            //$client->getEmitter()->attach($subscriber);
-
-
             $response = $client->get($url, ['debug' => false, 'query' => $params]);
 
             $result = json_decode($response->getBody()->getContents(), true);
@@ -226,8 +222,6 @@ class ForecastIO extends WeatherAbstract
                 'icon'  => $item['icon']
             ];
         }
-
-        //var_dump($result);
 
         $hourly = new Hourly();
         $hourly->setData([

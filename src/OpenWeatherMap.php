@@ -22,7 +22,6 @@ class OpenWeatherMap extends WeatherAbstract
         $content = file_get_contents('http://api.openweathermap.org/data/2.5/weather?q=Ulyanovsk,%20RU&units=metric&lang=ru');
 
         $result = json_decode($content, true);
-        var_dump($result);;
 
         $cur = new Current();
         $cur->setData([

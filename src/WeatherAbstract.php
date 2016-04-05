@@ -205,4 +205,9 @@ abstract class WeatherAbstract
    /* abstract public function getDaily();
 
     abstract public function getHistory();*/
+
+    public function calcDewPoint($h)
+    {
+
+    }
 }

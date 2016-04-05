@@ -22,6 +22,7 @@ class Hourly implements ForecastItemInterface
 
     /** @var array */
     protected $hours = [];
+
     /**
      * @api
      *
@@ -70,10 +71,9 @@ class Hourly implements ForecastItemInterface
     {
         $this->summary = $data['summary'];
 
-        foreach($data['hours'] as $hour) {
+        foreach ($data['hours'] as $hour) {
             $this->hours[] = (new Hour())->setData($hour);
         }
-
 
 
         /*$this->temperature = (new Temperature())->setData($data['temperature']);
@@ -102,7 +102,7 @@ class Hourly implements ForecastItemInterface
         }
 
         /** @var Hour $hour */
-        foreach ($this->hours as $hour ) {
+        foreach ($this->hours as $hour) {
 
             $h = $hour->getDate()->format('H');
             if ((int)$hour->getDate()->format('H') === $seekingHour) {
