@@ -7,7 +7,7 @@
  * @author  Sergey V.Kuzin <sergey@kuzin.name>
  * @license MIT
  */
-
+declare(strict_types=1);
 namespace Forecast\Model;
 
 
@@ -39,7 +39,7 @@ class Hour implements  ForecastItemInterface
      *
      * @return string
      */
-    public function getSummary()
+    public function getSummary(): string
     {
         return $this->summary;
     }
@@ -49,7 +49,7 @@ class Hour implements  ForecastItemInterface
      *
      * @return Temperature
      */
-    public function getTemperature()
+    public function getTemperature(): Temperature
     {
         return $this->temperature;
     }
@@ -59,7 +59,7 @@ class Hour implements  ForecastItemInterface
      *
      * @return Wind
      */
-    public function getWind()
+    public function getWind(): Wind
     {
         return $this->wind;
     }
@@ -69,7 +69,7 @@ class Hour implements  ForecastItemInterface
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string 
     {
         return (string)$this->getSummary();
     }
@@ -77,16 +77,16 @@ class Hour implements  ForecastItemInterface
     /**
      * @return \DateTime
      */
-    public function getDate()
+    public function getDate(): \DateTime
     {
         return $this->date;
     }
 
     /**
      * @param array $data
-     * @return $this
+     * @return ForecastItemInterface
      */
-    public function setData(array $data)
+    public function setData(array $data): ForecastItemInterface
     {
         $this->date = $data['date'];
         $this->summary = $data['summary'];
@@ -101,7 +101,7 @@ class Hour implements  ForecastItemInterface
     /**
      * @return Humidity
      */
-    public function getHumidity()
+    public function getHumidity(): Humidity
     {
         return $this->humidity;
     }
@@ -109,7 +109,7 @@ class Hour implements  ForecastItemInterface
     /**
      * @return Precipitation
      */
-    public function getPrecipitation()
+    public function getPrecipitation(): Precipitation
     {
         return $this->precipitation;
     }
@@ -117,7 +117,7 @@ class Hour implements  ForecastItemInterface
     /**
      * @return string
      */
-    public function getIcon()
+    public function getIcon(): string
     {
         return $this->icon;
     }

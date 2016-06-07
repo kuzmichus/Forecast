@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  *
  * PHP version 5.5
@@ -11,6 +12,7 @@
 namespace Forecast;
 
 
+use Cache\Taggable\TaggablePSR6PoolAdapter;
 use Fig\Cache\Memory\MemoryPool;
 use Forecast\Helper\Point;
 use Psr\Cache\CacheItemPoolInterface;
@@ -30,9 +32,12 @@ use Psr\Log\NullLogger;
  */
 abstract class WeatherAbstract
 {
+    /** @var \DateTime */
+    protected $expiration = null;
+
     /**
      * @internal
-     * @var NullCacheItemPool
+     * @var TaggablePSR6PoolAdapter
      */
     protected $cache = null;
 
@@ -75,8 +80,10 @@ abstract class WeatherAbstract
      */
     public function __construct(CacheItemPoolInterface $cache = null, LoggerInterface $logger = null)
     {
-        $this->cache = $cache ?: new MemoryPool();
+        $this->cache = TaggablePSR6PoolAdapter::makeTaggable($cache ?: new MemoryPool());
         $this->logger = $logger ?: new NullLogger();
+
+
     }
 
     /**
@@ -86,7 +93,7 @@ abstract class WeatherAbstract
      *
      * @return string
      */
-    public function getLang()
+    public function getLang(): string
     {
         return $this->lang;
     }
@@ -95,7 +102,7 @@ abstract class WeatherAbstract
      * @api
      * @param string $lang
      */
-    public function setLang($lang)
+    public function setLang(string $lang): self
     {
         $this->lang = $lang;
         return $this;
@@ -106,7 +113,7 @@ abstract class WeatherAbstract
      *
      * @return string
      */
-    public function getUnits()
+    public function getUnits(): string
     {
         return $this->units;
     }
@@ -119,11 +126,16 @@ abstract class WeatherAbstract
      * @api
      * @return \Forecast\Current|null Объект с текущей погодой
      */
-    public function getCurrent(Point $point)
+    public function getCurrent(Point $point): Current
     {
         $item = $this->cache->getItem($this->getCacheKeyCurrent($point));
-        if (!$item->exists()) {
-            $item->set($this->doFetchCurrent($point), $this->getCacheExpirationCurrent());
+        if (!$item->isHit()) {
+            $current = $this->doFetchCurrent($point);
+            $item
+                ->set($current)
+                ->expiresAt($this->getCacheExpirationCurrent())
+                ->setTags(['weather']);
+
             $this->cache->save($item);
         }
         return $item->get();
@@ -131,16 +143,30 @@ abstract class WeatherAbstract
 
     /**
      * @api
+     * 
+     * @param Point $point
+     * @param bool $forse
      * @return Hourly
      */
-    public function getHourly(Point $point, $forse = false)
+    public function getHourly(Point $point, bool $forse = false): Hourly
     {
         $item = $this->cache->getItem($this->getCacheKeyHourly($point));
-        if ($forse || !$item->exists()) {
-            $item->set($this->doFetchHourly($point), $this->getCacheExpirationHourly());
+        if ($forse || !$item->isHit()) {
+            $item
+                ->set($this->doFetchHourly($point))
+                ->expiresAt($this->getCacheExpirationHourly())
+                ->setTags(['weather']);
             $this->cache->save($item);
         }
         return $item->get();
+    }
+
+    /**
+     * 
+     */
+    public function flushCache()
+    {
+        $this->cache->clearTags(['weather']);
     }
 
 
@@ -150,7 +176,7 @@ abstract class WeatherAbstract
      * @param string $units
      * @return $this
      */
-    public function setUnits($units)
+    public function setUnits(string $units): self
     {
         $this->units = $units;
         return $this;
@@ -201,12 +227,11 @@ abstract class WeatherAbstract
     abstract protected function getCacheExpirationHourly();
 
 
+    /* abstract public function getDaily();
 
-   /* abstract public function getDaily();
+     abstract public function getHistory();*/
 
-    abstract public function getHistory();*/
-
-    public function calcDewPoint($h)
+    public function calcDewPoint(float $h)
     {
 
     }

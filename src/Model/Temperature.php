@@ -7,7 +7,7 @@
  * @author  Sergey V.Kuzin <sergey@kuzin.name>
  * @license MIT
  */
-
+declare(strict_types=1);
 namespace Forecast\Model;
 
 

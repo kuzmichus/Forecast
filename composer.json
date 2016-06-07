@@ -9,7 +9,7 @@
     "windchill index"
   ],
   "homepage": "https://github.com/kuzmichus/Forecast",
-  "minimum-stability": "stable",
+  "minimum-stability": "dev",
   "license": "MIT",
   "authors": [
     {
@@ -24,7 +24,8 @@
     "psr/cache": "1.0",
     "fig/cache-util": "1.0.x-dev",
     "guzzlehttp/guzzle": "~5.0",
-    "guzzlehttp/log-subscriber": "^1.0"
+    "guzzlehttp/log-subscriber": "^1.0",
+    "cache/taggable-cache": "^0.4.0"
   },
   "require-dev": {
     "phpunit/phpunit": "~4.0"

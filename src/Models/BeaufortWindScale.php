@@ -7,7 +7,7 @@
  * @author  Sergey V.Kuzin <sergey@kuzin.name>
  * @license MIT
  */
-
+declare(strict_types=1);
 namespace Forecast\Models;
 
 
@@ -45,17 +45,17 @@ class BeaufortWindScale
     private $wind = 0;
 
     /**
-     * @return double
+     * @return float
      */
-    public function getWind()
+    public function getWind(): float
     {
         return $this->wind;
     }
 
     /**
-     * @param double $wind
+     * @param float $wind
      */
-    public function setWind($wind)
+    public function setWind(float $wind): self
     {
         if ($wind < 0) {
             throw new \InvalidArgumentException('Значение $windSpeed < 0');
@@ -64,7 +64,10 @@ class BeaufortWindScale
         return $this;
     }
 
-    public function calc()
+    /**
+     * @return int
+     */
+    public function calc(): int
     {
         $wind = $this->getWind();
 

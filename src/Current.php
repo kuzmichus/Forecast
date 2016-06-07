@@ -2,6 +2,7 @@
 /**
  *
  */
+declare(strict_types=1);
 namespace Forecast;
 use Forecast\Model\Humidity;
 use Forecast\Model\Precipitation;
@@ -41,7 +42,7 @@ class Current implements ForecastItemInterface
      *
      * @return Temperature
      */
-    public function getTemperature()
+    public function getTemperature(): Temperature
     {
         return $this->temperature;
     }
@@ -52,7 +53,7 @@ class Current implements ForecastItemInterface
      * @api
      * @return Wind
      */
-    public function getWind()
+    public function getWind(): Wind
     {
         return $this->wind;
     }
@@ -89,9 +90,9 @@ class Current implements ForecastItemInterface
 
     /**
      * @param array $data Устанвыочные данные о погоде
-     * @return $this
+     * @return Current
      */
-    public function setData(array $data)
+    public function setData(array $data): ForecastItemInterface
     {
         $this->summary = $data['summary'];
         $this->temperature = (new Temperature())->setData($data['temperature']);
@@ -117,7 +118,7 @@ class Current implements ForecastItemInterface
     /**
      * @return string
      */
-    public function getIcon()
+    public function getIcon(): string
     {
         // TODO: Implement getIcon() method.
     }

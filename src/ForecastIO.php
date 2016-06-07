@@ -12,8 +12,6 @@ namespace Forecast;
 
 
 use Forecast\Helper\Point;
-use GuzzleHttp\Subscriber\Log\Formatter;
-use GuzzleHttp\Subscriber\Log\LogSubscriber;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 
@@ -36,9 +34,6 @@ class ForecastIO extends WeatherAbstract
      */
     protected $apiKey = null;
     protected $pint = null;
-
-    /** @var \DateTime */
-    protected $expiration = null;
 
     /**
      * Полу
@@ -64,7 +59,7 @@ class ForecastIO extends WeatherAbstract
 
         $key = 'weather.fc.io-all-' . md5(serialize([$this->getLang(), $this->getUnits(), $point->getKey()]));
         $item = $this->cache->getItem($key);
-        if (!$item->exists()) {
+        if (!$item->isHit()) {
             $params = [
                 'units' => $this->getUnits(),
                 'lang' => $this->getLang(),
@@ -80,13 +75,19 @@ class ForecastIO extends WeatherAbstract
 
             if ($result !== null) {
                 list($n, $exp) = explode('=', $response->getHeader('Cache-Control'));
-                $item->expiresAfter($exp);
-                $item->set($result);
-                $item->expiresAfter($exp);
+                $exp = (int)$exp;
+                $exp  = 60*15;
+                $this->expiration = \DateTime::createFromFormat(
+                    'U',
+                    time() + $exp
+                );
+                $item->set($result)
+                    ->expiresAfter($exp)
+                    ->addTag('weather');
                 $this->cache->save($item);
             }
         }
-        $this->expiration = $item->getExpiration();
+
         return $item->get();
     }
 
@@ -201,7 +202,7 @@ class ForecastIO extends WeatherAbstract
             }
 
             $hours[] = [
-                'summary'   => $item['summary'],
+                'summary' => $item['summary'],
                 'date' => new \DateTime(date(\DateTime::RFC3339, $item['time'])),
                 'temperature' => [
                     'current' => $item['temperature'],
@@ -219,7 +220,7 @@ class ForecastIO extends WeatherAbstract
                 'humidity' => [
                     'humidity' => $item['humidity']
                 ],
-                'icon'  => $item['icon']
+                'icon' => $item['icon']
             ];
         }
 

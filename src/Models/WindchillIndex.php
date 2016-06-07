@@ -7,7 +7,7 @@
  * @author  Sergey V.Kuzin <sergey@kuzin.name>
  * @license MIT
  */
-
+declare(strict_types=1);
 namespace Forecast\Models;
 
 /**
@@ -67,7 +67,7 @@ class WindchillIndex
     /**
      * @return float
      */
-    public function getTemp()
+    public function getTemp(): float
     {
         return $this->temp;
     }
@@ -75,7 +75,7 @@ class WindchillIndex
     /**
      * @param float $temp
      */
-    public function setTemp($temp)
+    public function setTemp(float $temp): self
     {
         $this->temp = $temp;
         return $this;
@@ -84,7 +84,7 @@ class WindchillIndex
     /**
      * @return float
      */
-    public function getWindSpeed()
+    public function getWindSpeed(): float
     {
         return $this->windSpeed;
     }
@@ -92,7 +92,7 @@ class WindchillIndex
     /**
      * @param float $windSpeed
      */
-    public function setWindSpeed($windSpeed)
+    public function setWindSpeed(float $windSpeed): self
     {
         $this->windSpeed = $windSpeed;
         return $this;
@@ -101,7 +101,7 @@ class WindchillIndex
     /**
      * @return float
      */
-    public function calc()
+    public function calc(): float
     {
         $Vkmph = $this->getWindSpeed() * 60.0 * 60.0 / 1000.0;
         $windSpeed = pow($Vkmph, self::C4);

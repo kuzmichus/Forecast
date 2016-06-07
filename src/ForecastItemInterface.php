@@ -30,14 +30,14 @@ interface ForecastItemInterface
      *
      * @return Temperature
      */
-    public function getTemperature();
+    public function getTemperature(): Temperature;
 
     /**
      * @api
      *
      * @return Wind
      */
-    public function getWind();
+    public function getWind(): Wind;
 
     /**
      * @return Humidity
@@ -52,7 +52,7 @@ interface ForecastItemInterface
     /**
      * @return string
      */
-    public function getIcon();
+    public function getIcon(): string;
 
     /**
      * @api
@@ -63,7 +63,7 @@ interface ForecastItemInterface
 
     /**
      * @param array $data
-     * @return $this
+     * @return ForecastItemInterface
      */
-    public function setData(array $data);
+    public function setData(array $data): self;
 }

@@ -7,6 +7,7 @@
  * @author  Sergey V.Kuzin <sergey@kuzin.name>
  * @license MIT
  */
+declare(strict_types=1);
 
 namespace Forecast\Model;
 
@@ -25,7 +26,7 @@ class Humidity implements ModelInterface
      *
      * @return float
      */
-    public function getHumidity()
+    public function getHumidity(): float
     {
         return $this->humidity;
     }
@@ -35,7 +36,7 @@ class Humidity implements ModelInterface
      *
      * @return float
      */
-    public function getDewPoint()
+    public function getDewPoint(): float
     {
         return $this->dewPoint;
     }
@@ -45,12 +46,12 @@ class Humidity implements ModelInterface
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return (string)$this->c;
+        return (string)$this->humidity;
     }
 
-    public function setData(array $data)
+    public function setData(array $data): self
     {
         if (
             !($trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS)) ||
@@ -59,8 +60,8 @@ class Humidity implements ModelInterface
             trigger_error('Member not available: setData', E_USER_ERROR);
         }
 
-        $this->current = $data['humidity'];
-        $this->current = isset($data['dewPoint']) ? $data['dewPoint'] : null;
+        $this->humidity = $data['humidity'] * 100;
+        $this->dewPoint = isset($data['dewPoint']) ? $data['dewPoint'] : null;
 
         return $this;
     }

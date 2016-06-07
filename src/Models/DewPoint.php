@@ -7,7 +7,7 @@
  * @author  Sergey V.Kuzin <sergey@kuzin.name>
  * @license MIT
  */
-
+declare(strict_types=1);
 namespace Forecast\Models;
 
 
@@ -21,7 +21,7 @@ class DewPoint
     /**
      * @return float
      */
-    public function getTemp()
+    public function getTemp(): float
     {
         return $this->temp;
     }
@@ -29,7 +29,7 @@ class DewPoint
     /**
      * @param float $temp
      */
-    public function setTemp($temp)
+    public function setTemp(float $temp): self
     {
         $this->temp = $temp;
         return $this;
@@ -38,7 +38,7 @@ class DewPoint
     /**
      * @return float
      */
-    public function getHumidity()
+    public function getHumidity(): float
     {
         return $this->humidity;
     }
@@ -46,7 +46,7 @@ class DewPoint
     /**
      * @param float $humidity
      */
-    public function setHumidity($humidity)
+    public function setHumidity(float $humidity): self
     {
         $this->humidity = $humidity;
         return $this;
@@ -55,7 +55,7 @@ class DewPoint
     /**
      * @return float
      */
-    public function calc()
+    public function calc(): float
     {
         $a = 17.27;
         $b = 237.7;

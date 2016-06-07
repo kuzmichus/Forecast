@@ -38,7 +38,7 @@ class Hourly implements ForecastItemInterface
      *
      * @return Temperature
      */
-    public function getTemperature()
+    public function getTemperature(): Temperature
     {
         // TODO: Implement getTemperature() method.
     }
@@ -48,7 +48,7 @@ class Hourly implements ForecastItemInterface
      *
      * @return Wind
      */
-    public function getWind()
+    public function getWind(): Wind
     {
         // TODO: Implement getWind() method.
     }
@@ -65,9 +65,9 @@ class Hourly implements ForecastItemInterface
 
     /**
      * @param array $data
-     * @return $this
+     * @return ForecastItemInterface
      */
-    public function setData(array $data)
+    public function setData(array $data): ForecastItemInterface
     {
         $this->summary = $data['summary'];
 
@@ -94,7 +94,7 @@ class Hourly implements ForecastItemInterface
      *
      * @return Hour
      */
-    public function inTime($seekingHour)
+    public function inTime($seekingHour): Hour
     {
         $seekingHour = (int)$seekingHour;
         if ($seekingHour < 0 || $seekingHour > 23) {
@@ -131,7 +131,7 @@ class Hourly implements ForecastItemInterface
     /**
      * @return string
      */
-    public function getIcon()
+    public function getIcon(): string
     {
         // TODO: Implement getIcon() method.
     }

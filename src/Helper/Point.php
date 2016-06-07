@@ -7,7 +7,7 @@
  * @author  Sergey V.Kuzin <sergey@kuzin.name>
  * @license MIT
  */
-
+declare(strict_types=1);
 namespace Forecast\Helper;
 
 
@@ -48,7 +48,7 @@ class Point
         }
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return (string)$this->getLatitude() . ',' . $this->getLongitude();
     }
@@ -57,7 +57,7 @@ class Point
      * @api
      * @return float
      */
-    public function getLatitude()
+    public function getLatitude(): float
     {
         return $this->latitude;
     }
@@ -66,7 +66,7 @@ class Point
      * @api
      * @return float
      */
-    public function getLongitude()
+    public function getLongitude(): float
     {
         return $this->longitude;
     }
@@ -75,7 +75,7 @@ class Point
      * @api
      * @return int
      */
-    public function getType()
+    public function getType(): int
     {
         return $this->type;
     }
@@ -84,12 +84,12 @@ class Point
      * @api
      * @return string
      */
-    public function getAddress()
+    public function getAddress(): string
     {
         return $this->address;
     }
 
-    public function getKey()
+    public function getKey(): string
     {
         if ($this->type == self::ADDRESS) {
             return md5($this->address);
