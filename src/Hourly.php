@@ -14,6 +14,8 @@ namespace Forecast;
 use Forecast\Model\Hour;
 use Forecast\Model\Humidity;
 use Forecast\Model\Precipitation;
+use Forecast\Model\Temperature;
+use Forecast\Model\Wind;
 
 class Hourly implements ForecastItemInterface
 {
